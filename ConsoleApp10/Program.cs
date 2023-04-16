@@ -1,12 +1,5 @@
-﻿
+﻿using ConsoleApp10;
 
-using ConsoleApp10;
-
-//using (BankClientsContext db = new BankClientsContext())
-//{
-//    foreach (User u in db.Users.ToList())
-//        Console.WriteLine($"Id: {u.Id}\nName: {u.LastName} {u.FirstName} {u.PatronomicName}\nAge: {u.Age}\nRole: {u.Role}\nAccount: {u.Account}\n\n");
-//}
 bool AppIsOn = true;
 int input;
 
