@@ -1,7 +1,15 @@
 ﻿using ConsoleApp10;
+using System.Linq.Expressions;
 
 bool AppIsOn = true;
 int input;
+string firstName;
+string lastName;
+string patronomic;
+int age;
+string role;
+string account;
+decimal balance;
 
 while (AppIsOn)
 {
@@ -11,7 +19,7 @@ while (AppIsOn)
         "1 - Вывести список пользователей из базы\n" +
         "2 - Добавить пользователя\n" +
         "3 - Удалить пользователя\n" +
-        "4 - Изменить баланс пользователя\n" +
+        "4 - Изменить данные пользователя\n" +
         "0 - Выход");
 
         if (int.TryParse(Console.ReadLine(), out input) && input >= 0 && input <= 4)
@@ -46,15 +54,14 @@ while (AppIsOn)
             while (add != 0)
             {
                 Console.WriteLine("\nВведите Имя: ");
-                string firstName = Console.ReadLine() ?? "no first_name";
+                firstName = Console.ReadLine() ?? "no first_name";
 
                 Console.WriteLine("Введите Фамилию: ");
-                string lastName = Console.ReadLine() ?? "no last_name";
+                lastName = Console.ReadLine() ?? "no last_name";
 
                 Console.WriteLine("Введите Отчество: ");
-                string patronomic = Console.ReadLine() ?? "no patronomic";
-
-                int age;
+                patronomic = Console.ReadLine() ?? "no patronomic";
+                                
                 while (true)
                 {
                     Console.WriteLine("\nВведите Возраст: ");
@@ -65,12 +72,11 @@ while (AppIsOn)
                 }
 
                 Console.WriteLine("Введите Роль пользователя (Клиент, сотрудник и т.д.): ");
-                string role = Console.ReadLine() ?? "no role";
+                role = Console.ReadLine() ?? "no role";
 
                 Console.WriteLine("Введите IBAN: ");
-                string account = Console.ReadLine() ?? "no patronomic";
-
-                decimal balance;
+                account = Console.ReadLine() ?? "no patronomic";
+                                
                 while (true)
                 {
                     Console.WriteLine("\nВведите Баланс на счете: ");
@@ -131,7 +137,203 @@ while (AppIsOn)
 
 
         case MainMenu.UpdateUser:
-            
+            while (true)
+            {
+                Console.WriteLine("\n\tВыберите поле для изменения:\n" +
+                "1 - Фамилия\n" +
+                "2 - Имя\n" +
+                "3 - Отчество\n" +
+                "4 - Возраст\n" +
+                "5 - Роль\n" +
+                "6 - Номер счета\n" +
+                "7 - Баланс на счете\n" +
+                "0 - Выход в главное меню");
+
+                if (int.TryParse(Console.ReadLine(), out input) && input >= 0 && input <= 7)
+                    break;
+                else
+                    Console.WriteLine("Ошибка ввода");
+            }
+
+            int id;
+
+            while (true)
+            {
+                Console.WriteLine("Введите Id пользователя, которого хотите изменить");
+
+                if (int.TryParse(Console.ReadLine(), out id))
+                    break;
+                else
+                    Console.WriteLine("Ошибка ввода");
+            }
+
+            if (!IdExist(id))
+            {
+                Console.WriteLine($"Пользователь с Id = {id} не найден в таблице");
+                input = 0;
+            }
+
+            switch ((UpdateMenu)input)
+            {
+                case UpdateMenu.Exit:
+                    break;
+
+
+                case UpdateMenu.FirstName:
+                    Console.WriteLine("\nВведите новое Имя: ");
+                    firstName = Console.ReadLine() ?? "no_first_name";
+
+                    using (ApplicationContext db = new ApplicationContext())
+                    {
+                        foreach (var u in db.Users.ToList())
+                        {
+                            if(u.Id == id)
+                            {
+                                u.FirstName = firstName;
+                                db.Users.Update(u);
+                                db.SaveChanges();
+                            }                                
+                        }
+                    }
+                    Console.WriteLine("Данные изменены");
+                    break;
+
+
+                case UpdateMenu.LastName:
+                    Console.WriteLine("\nВведите новую фамилию: ");
+                    lastName = Console.ReadLine() ?? "no_last_name";
+
+                    using (ApplicationContext db = new ApplicationContext())
+                    {
+                        foreach (var u in db.Users.ToList())
+                        {
+                            if (u.Id == id)
+                            {
+                                u.LastName = lastName;
+                                db.Users.Update(u);
+                                db.SaveChanges();
+                            }
+                        }
+                    }
+                    Console.WriteLine("Данные изменены");
+                    break;
+
+
+                case UpdateMenu.Patronomic:
+                    Console.WriteLine("\nВведите новое отчество: ");
+                    patronomic = Console.ReadLine() ?? "no_patronomic";
+
+                    using (ApplicationContext db = new ApplicationContext())
+                    {
+                        foreach (var u in db.Users.ToList())
+                        {
+                            if (u.Id == id)
+                            {
+                                u.PatronomicName = patronomic;
+                                db.Users.Update(u);
+                                db.SaveChanges();
+                            }
+                        }
+                    }
+                    Console.WriteLine("Данные изменены");
+                    break;
+
+
+                case UpdateMenu.Age:
+                    while (true)
+                    {
+                        Console.WriteLine("\nВведите новый возраст: ");
+                        if (int.TryParse(Console.ReadLine(), out age))
+                            break;
+                        else
+                            Console.WriteLine("Ошибка ввода");
+                    }
+
+                    using (ApplicationContext db = new ApplicationContext())
+                    {
+                        foreach (var u in db.Users.ToList())
+                        {
+                            if (u.Id == id)
+                            {
+                                u.Age = age;
+                                db.Users.Update(u);
+                                db.SaveChanges();
+                            }
+                        }
+                    }
+                    Console.WriteLine("Данные изменены");
+                    break;
+
+
+                case UpdateMenu.Role:
+                    Console.WriteLine("\nВведите новую Роль: ");
+                    role = Console.ReadLine() ?? "no_role";
+
+                    using (ApplicationContext db = new ApplicationContext())
+                    {
+                        foreach (var u in db.Users.ToList())
+                        {
+                            if (u.Id == id)
+                            {
+                                u.Role = role;
+                                db.Users.Update(u);
+                                db.SaveChanges();
+                            }
+                        }
+                    }
+                    Console.WriteLine("Данные изменены");
+                    break;
+
+
+                case UpdateMenu.Account:
+                    Console.WriteLine("\nВведите новый номер счета: ");
+                    account = Console.ReadLine() ?? "no_account";
+
+                    using (ApplicationContext db = new ApplicationContext())
+                    {
+                        foreach (var u in db.Users.ToList())
+                        {
+                            if (u.Id == id)
+                            {
+                                u.Account = account;
+                                db.Users.Update(u);
+                                db.SaveChanges();
+                            }
+                        }
+                    }
+                    Console.WriteLine("Данные изменены");
+                    break;
+
+
+                case UpdateMenu.Balance:
+                    while (true)
+                    {
+                        Console.WriteLine("\nВведите новый баланс на счете: ");
+                        if (decimal.TryParse(Console.ReadLine(), out balance))
+                            break;
+                        else
+                            Console.WriteLine("Ошибка ввода");
+                    }
+
+                    using (ApplicationContext db = new ApplicationContext())
+                    {
+                        foreach (var u in db.Users.ToList())
+                        {
+                            if (u.Id == id)
+                            {
+                                u.Balance = balance;
+                                db.Users.Update(u);
+                                db.SaveChanges();
+                            }
+                        }
+                    }
+                    Console.WriteLine("Данные изменены");
+                    break;
+
+
+                default:
+                    break;
+            }
 
             break;
 
@@ -140,6 +342,20 @@ while (AppIsOn)
             break;
     }
 
+}
+
+static bool IdExist(int id)
+{
+    bool isExist = false;
+
+    using (BankClientsContext db = new BankClientsContext())
+    {
+        foreach (User u in db.Users.ToList())
+            if (u.Id == id)
+                isExist = true;
+    }
+
+    return isExist;
 }
 
 static bool AddToTableDB(List<User> users)
@@ -155,6 +371,8 @@ static bool AddToTableDB(List<User> users)
             {
                 db.Users.Add(item);
             }
+
+            db.SaveChanges();
         }        
     }
     catch (Exception)
@@ -198,6 +416,9 @@ static long GetNextId()
 }
 
 enum MainMenu { Exit, ExportUsers, AddUser, RemoveUser, UpdateUser }
+
+enum UpdateMenu { Exit, FirstName, LastName, Patronomic, Age, Role, Account, Balance }
+
 
 
 //добавление
